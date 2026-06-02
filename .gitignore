@@ -12,7 +12,8 @@ hosting/.cache
 /functions/node_modules/
 /functions/.env
 /functions/package-lock.json
-
+node_modules/
+/functions/.firebase/
 # Firebase Emulators
 /firebase-*.zip
 /.firebase/
@@ -26,3 +27,5 @@ yarn-error.log*
 
 # Environment files (local configs)
 /.env.*
+build 
+.agents
