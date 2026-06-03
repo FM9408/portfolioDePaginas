@@ -16,11 +16,11 @@ jobs:
 
       # PASO NUEVO: Instala las dependencias dentro de la carpeta client antes de compilar
       - name: Go into client and install dependencies
-        run: cd client && npm ci
+        run: npm ci -w client
 
       # PASO CORREGIDO: Ahora que vite ya existe, compila de forma segura (quitamos el deploy manual)
       - name: Build project
-        run: cd client npm run build
+        run: npm run build -w client
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
