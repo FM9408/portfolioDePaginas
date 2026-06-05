@@ -1,7 +1,10 @@
 // src/components/Login.jsx
 import { useState } from 'react';
 import { auth } from '../firebase/config';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import IconButton from '@mui/material/IconButton';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import {
     Container,
@@ -11,11 +14,22 @@ import {
     Button,
     Alert,
     CircularProgress,
+    Divider,
+    Grid,
 } from '@mui/material';
+import { GoogleLoginButton } from './GoogleLoginButton';
 
 const LogInForm = () => {
     const [email, setEmail] = useState('');
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
+    const handleMouseUpPassword = (event) => {
+        event.preventDefault();
+    };
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -114,14 +128,34 @@ const LogInForm = () => {
                         margin='normal'
                         required
                         fullWidth
-                        name='password'
-                        label='Contraseña'
-                        type='password'
+                        type={showPassword ? 'text' : 'password'}
                         id='password'
+                        label='Contraseña'
                         autoComplete='current-password'
+                        name='password'
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        disabled={loading}
+                        slotProps={{
+                            input: {
+                                endAdornment: (
+                                    <IconButton
+                                        aria-label={
+                                            showPassword ? 'hide password' : (
+                                                'display password'
+                                            )
+                                        }
+                                        onClick={handleClickShowPassword}
+                                        onMouseDown={handleMouseDownPassword}
+                                        onMouseUp={handleMouseUpPassword}
+                                        edge='end'
+                                    >
+                                        {showPassword ?
+                                            <VisibilityOff />
+                                        :   <Visibility />}
+                                    </IconButton>
+                                ),
+                            },
+                        }}
                     />
                     <Button
                         type='submit'
@@ -137,6 +171,37 @@ const LogInForm = () => {
                     </Button>
                 </Box>
             </Box>
+            <Divider sx={{ my: 2 }}>
+                <Typography variant='caption'>Ingresa con</Typography>
+            </Divider>
+            <Grid container direction='column'>
+                <Grid
+                   
+                    xs={12}
+                    sx={{
+                        textAlign: 'center',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        display: 'flex',
+                    }}
+                >
+                    <Grid
+                        container
+                        direction={'row'}
+                        spacing={2}
+                    >
+                        <Grid  xs={6}>
+                            <GoogleLoginButton />
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid >
+                    <Typography>
+                        ¿No tienes cuenta?
+                        {<NavLink to='/signup'>Crear una</NavLink>}
+                    </Typography>
+                </Grid>
+            </Grid>
         </Container>
     );
 };

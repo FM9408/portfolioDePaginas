@@ -8,6 +8,7 @@ import { UseAuth } from '../context/AuthContext.jsx';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
 import Dashboard from '../pages/Dashboard';
+import SignUpPage from '../pages/SignupPage';
 import Settings from '../pages/Settings';
 import AdminDashboard from '../pages/Admin/Admindashboard.jsx';
 
@@ -35,6 +36,8 @@ const AppRoutes = () => {
             {/* ================= RUTAS GENERALES (PÚBLICAS) ================= */}
             <Route path='/' element={<Home />} />
             <Route path='/login' element={<Login />} />
+            <Route path='/signup' element={<SignUpPage />} />
+
 
             {/* ================= RUTAS PROTEGIDAS (USUARIOS NORMALES) ================= */}
             <Route
