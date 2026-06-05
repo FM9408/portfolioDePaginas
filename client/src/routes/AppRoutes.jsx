@@ -1,18 +1,34 @@
 // src/routes/AppRoutes.jsx
-import { Routes, Route } from 'react-router-dom';
-import ProtectedRoute from '../components/ProtectedRutes';
-import { UseAuth } from '../context/AuthContext';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Box, CircularProgress } from '@mui/material';
+import ProtectedRoute from '../components/ProtectedRutes'; // Mantengo tu typo exacto
+import { UseAuth } from '../context/AuthContext.jsx';
 
-// Componentes ejemplo de tu app
+// Componentes de tu app
 import Home from '../pages/Home';
 import Login from '../pages/Login';
 import Dashboard from '../pages/Dashboard';
 import Settings from '../pages/Settings';
+import AdminDashboard from '../pages/Admin/Admindashboard.jsx';
 
 const AppRoutes = () => {
-    const { isAuthenticated } = UseAuth();
+    const { isAuthenticated, role, loading } = UseAuth();
 
-    // Simulamos un estado de sesión (cámbialo por tu lógica real de auth)
+    if (loading) {
+        return (
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: '100vh',
+                    bgcolor: 'background.default',
+                }}
+            >
+                <CircularProgress color='primary' />
+            </Box>
+        );
+    }
 
     return (
         <Routes>
@@ -20,8 +36,7 @@ const AppRoutes = () => {
             <Route path='/' element={<Home />} />
             <Route path='/login' element={<Login />} />
 
-            {/* ================= RUTAS PROTEGIDAS (PRIVADAS) ================= */}
-            {/* Envolvemos las rutas privadas con nuestro componente guardián */}
+            {/* ================= RUTAS PROTEGIDAS (USUARIOS NORMALES) ================= */}
             <Route
                 element={
                     <ProtectedRoute
@@ -30,8 +45,31 @@ const AppRoutes = () => {
                     />
                 }
             >
-                <Route path='/dashboard' element={<Dashboard />} />
+                {/* 🔴 LA SOLUCIÓN AQUÍ: 
+                  Si el formulario te manda a /dashboard pero eres admin, 
+                  esta condicional te redirige de inmediato a la ruta correcta sin romper nada.
+                */}
+                <Route
+                    path='/dashboard'
+                    element={
+                        role === 'admin' ?
+                            <Navigate to='/admin/dashboard' replace />
+                        :   <Dashboard />
+                    }
+                />
                 <Route path='/settings' element={<Settings />} />
+            </Route>
+
+            {/* ================= RUTAS PROTEGIDAS (SÓLO ADMINISTRADORES) ================= */}
+            <Route
+                element={
+                    <ProtectedRoute
+                        isAllowed={isAuthenticated && role === 'admin'}
+                        redirectTo='/dashboard'
+                    />
+                }
+            >
+                <Route path='/admin/dashboard' element={<AdminDashboard />} />
             </Route>
 
             {/* Ruta para manejar el error 404 Not Found */}

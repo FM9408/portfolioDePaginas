@@ -1,3 +1,4 @@
+// src/pages/Login/index.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogInForm from '../../components/LogIn.jsx';
@@ -5,15 +6,21 @@ import { Container, Box } from '@mui/material';
 import { UseAuth } from '../../context/AuthContext';
 
 export default function Login() {
-    const { user, loading } = UseAuth();
+    const { role, user, loading } = UseAuth();
     const navigate = useNavigate();
 
     React.useEffect(() => {
-        if (!loading && user) {
-            // Si el usuario ya está autenticado, redirige al dashboard
-            navigate('/dashboard');
+        if (loading) return;
+
+        // Si ya hay sesión iniciada de antes, dejamos que el router decida dónde colocarlo
+        if (user) {
+            if (role === 'admin') {
+                navigate('/admin/dashboard', { replace: true });
+            } else {
+                navigate('/dashboard', { replace: true });
+            }
         }
-    }, [loading, user, navigate]);
+    }, [role, user, loading, navigate]);
 
     return (
         <Container maxWidth='sm'>
