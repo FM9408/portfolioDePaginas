@@ -1,11 +1,20 @@
 // src/context/AuthContext.jsx
-import { createContext, useContext, useState, useEffect } from 'react';
-// Importamos las herramientas de Firebase (asumiendo que ya configuraste tu archivo firebase.js)
+import {
+    createContext,
+    useContext,
+    useState,
+    useEffect,
+    useMemo,
+    useCallback,
+} from 'react';
+import PropTypes from 'prop-types';
 import { auth } from '../firebase/config';
 import {
     signInWithEmailAndPassword,
     signOut,
     onAuthStateChanged,
+    GoogleAuthProvider,
+    signInWithPopup,
 } from 'firebase/auth';
 
 const AuthContext = createContext(null);
@@ -14,32 +23,67 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    // Derivamos el estado de autenticación de forma limpia
+    const isAuthenticated = !!user;
+
     useEffect(() => {
-        // onAuthStateChanged se queda "escuchando" a Firebase de fondo
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser); // Si hay usuario, guarda el objeto de Firebase. Si no, guarda null.
-            setLoading(false); // Firebase ya respondió, dejamos de mostrar la pantalla de carga
+            setUser(currentUser);
+            setLoading(false);
         });
 
-        // Limpieza del escuchador cuando el componente se desmonte
         return () => unsubscribe();
     }, []);
 
-    // Función para iniciar sesión con Firebase
-    const loginWithEmail = (email, password) => {
+    // useCallback memoriza las referencias de las funciones para que no cambien en cada render
+    const loginWithEmail = useCallback((email, password) => {
         return signInWithEmailAndPassword(auth, email, password);
-    };
+    }, []);
 
-    // Función para cerrar sesión con Firebase
-    const logout = () => {
+    const logout = useCallback(() => {
         return signOut(auth);
-    };
+    }, []);
+
+    const loginWithGoogle = useCallback(() => {
+        const provider = new GoogleAuthProvider();
+        return signInWithPopup(auth, provider);
+    }, []);
+
+    // useMemo asegura que el objeto de contexto solo mute si realmente cambian sus dependencias
+    const contextValue = useMemo(
+        () => ({
+            user,
+            loginWithEmail,
+            logout,
+            loginWithGoogle,
+            loading,
+            isAuthenticated,
+        }),
+        [
+            user,
+            loginWithEmail,
+            logout,
+            loginWithGoogle,
+            loading,
+            isAuthenticated,
+        ]
+    );
 
     return (
-        <AuthContext.Provider value={{ user, loginWithEmail, logout, loading }}>
+        <AuthContext.Provider value={contextValue}>
             {children}
         </AuthContext.Provider>
     );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const UseAuth = () => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('UseAuth debe ser utilizado dentro de un AuthProvider');
+    }
+    return context;
+};
+
+AuthProvider.propTypes = {
+    children: PropTypes.node.isRequired,
+};
