@@ -13,7 +13,7 @@ import {
     CircularProgress,
 } from '@mui/material';
 
-const Login = () => {
+const LogInForm = () => {
     const [email, setEmail] = useState('');
     const navigate = useNavigate();
     const [password, setPassword] = useState('');
@@ -141,4 +141,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default LogInForm;

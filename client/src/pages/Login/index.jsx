@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import LogInForm from '../../components/Login';
+import LogInForm from '../../components/LogIn.jsx';
 import { Container, Box } from '@mui/material';
 import { UseAuth } from '../../context/AuthContext';
 
