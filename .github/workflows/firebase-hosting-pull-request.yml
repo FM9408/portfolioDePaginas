@@ -6,13 +6,13 @@ on:
   push:
     branches:
       - development
-permissions:
-  checks: write
-  contents: read
-  pull-requests: write
+# permissions:
+#   checks: write
+#   contents: read
+#   pull-requests: write
 jobs:
   build_and_preview:
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    # if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,4 +31,4 @@ jobs:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PORTFOLIOPERSONAL_7CDAE }}
           projectId: portfoliopersonal-7cdae
-          entryPoint: "client" 
+          
