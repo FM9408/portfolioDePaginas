@@ -251,6 +251,7 @@ export default function Navbar() {
                                             {user.email}
                                         </Typography>
                                     </MenuItem>
+                                    <MenuItem onClick={() => navigate("/dashboard")}>Dashboard</MenuItem>
                                     <MenuItem onClick={handleLogoutClick}>
                                         <Typography variant='body2'>
                                             Cerrar Sesión

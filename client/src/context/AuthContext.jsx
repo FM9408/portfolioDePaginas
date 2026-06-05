@@ -8,12 +8,18 @@ import {
     useCallback,
 } from 'react';
 import PropTypes from 'prop-types';
-import { auth, db } from '../firebase/config'; // Usamos la db configurada con el emulador
+import { auth } from '../firebase/config';
 import { doc, getDoc } from 'firebase/firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions'; // <-- Importamos llamador de functions
 import {
     signInWithEmailAndPassword,
     signOut,
     onAuthStateChanged,
+    GoogleAuthProvider,
+    signInWithPopup,
+    signInAnonymously,
+    linkWithCredential,
+    EmailAuthProvider,
 } from 'firebase/auth';
 
 const AuthContext = createContext(null);
@@ -23,36 +29,32 @@ export const AuthProvider = ({ children }) => {
     const [role, setRole] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const isAuthenticated = !!user;
+    const isAuthenticated = !!user && !user.isAnonymous;
+    const isAnonymous = !!user && user.isAnonymous;
     const isAdmin = role === 'admin';
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-            // Mantenemos o activamos el estado de carga al detectar un cambio de usuario
-            setLoading(true);
+            setUser(currentUser);
 
-            if (currentUser) {
-                setUser(currentUser);
-
+            if (currentUser && !currentUser.isAnonymous) {
+                // Aquí usamos la DB local solo para leer el rol, no para escribir
+                const { db } = await import('../firebase/config');
                 try {
-                    const userDocRef = doc(db, 'users', currentUser.uid);
-                    const userDoc = await getDoc(userDocRef);
-
-                    if (userDoc.exists()) {
-                        setRole(userDoc.data().role || 'user');
-                    } else {
-                        setRole('user');
-                    }
-                } catch (error) {
-                    console.error('Error al obtener el rol:', error);
+                    const userDoc = await getDoc(
+                        doc(db, 'users', currentUser.uid)
+                    );
+                    setRole(
+                        userDoc.exists() ?
+                            userDoc.data().role || 'user'
+                        :   'user'
+                    );
+                } catch (e) {
                     setRole('user');
                 }
             } else {
-                setUser(null);
                 setRole(null);
             }
-
-            // CRÍTICO: loading solo pasa a false cuando ya tenemos el usuario Y su rol definidos
             setLoading(false);
         });
 
@@ -62,6 +64,46 @@ export const AuthProvider = ({ children }) => {
     const loginWithEmail = useCallback((email, password) => {
         return signInWithEmailAndPassword(auth, email, password);
     }, []);
+
+    const loginWithGoogle = useCallback(() => {
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
+        return signInWithPopup(auth, provider);
+    }, []);
+
+  const registerAndLinkAccount = useCallback(
+      async (email, password, username) => {
+          if (!auth.currentUser) {
+              await signInAnonymously(auth);
+          }
+
+          const currentUser = auth.currentUser;
+
+          if (currentUser.isAnonymous) {
+              const credential = EmailAuthProvider.credential(email, password);
+
+              // 1. Vinculamos de forma local en Auth
+              const userCredential = await linkWithCredential(
+                  currentUser,
+                  credential
+              );
+
+              // 2. Despertamos la Cloud Function pasándole email y el nuevo username
+              const functions = getFunctions();
+              const llamarFuncionServidor = httpsCallable(
+                  functions,
+                  'registrarDocumentoDesdeServidor'
+              );
+
+              await llamarFuncionServidor({ email: email, username: username });
+
+              return userCredential;
+          } else {
+              throw new Error('Ya hay una sesión real activa.');
+          }
+      },
+      []
+  );
 
     const logout = useCallback(() => {
         return signOut(auth);
@@ -74,27 +116,37 @@ export const AuthProvider = ({ children }) => {
             isAdmin,
             loading,
             isAuthenticated,
+            isAnonymous,
             loginWithEmail,
+            loginWithGoogle,
+            registerAndLinkAccount,
             logout,
         }),
-        [user, role, isAdmin, loading, isAuthenticated, loginWithEmail, logout]
+        [
+            user,
+            role,
+            isAdmin,
+            loading,
+            isAuthenticated,
+            isAnonymous,
+            loginWithEmail,
+            loginWithGoogle,
+            registerAndLinkAccount,
+            logout,
+        ]
     );
 
     return (
         <AuthContext.Provider value={contextValue}>
-            {children}
+            {!loading && children}
         </AuthContext.Provider>
     );
 };
 
 export const UseAuth = () => {
     const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuth debe ser utilizado dentro de un AuthProvider');
-    }
+    if (!context) throw new Error('useAuth debe usarse dentro de AuthProvider');
     return context;
 };
 
-AuthProvider.propTypes = {
-    children: PropTypes.node.isRequired,
-};
+AuthProvider.propTypes = { children: PropTypes.node.isRequired };
