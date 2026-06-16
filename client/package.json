@@ -1,0 +1,44 @@
+{
+    "name": "client",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "start vite",
+        "build": "npm run lint:fix && vite build",
+        "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
+        "lint:fix": "eslint . --fix",
+        "preview": "vite preview",
+        "deploy": "firebase deploy --only hosting",
+        "start": "vite"
+    },
+    "dependencies": {
+        "@emotion/react": "^11.14.0",
+        "@emotion/styled": "^11.14.1",
+        "@mui/icons-material": "^9.1.1",
+        "@mui/material": "^9.0.1",
+        "@reduxjs/toolkit": "^2.12.0",
+        "firebase": "^12.14.0",
+        "react": "^19.2.6",
+        "react-dom": "^19.2.6",
+        "react-redux": "^9.3.0",
+        "react-router-dom": "^7.16.0"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.39.4",
+        "@types/react": "^19.2.14",
+        "@types/react-dom": "^19.2.3",
+        "@vitejs/plugin-react": "^6.0.1",
+        "eslint": "^9.39.4",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-react": "^7.37.5",
+        "eslint-plugin-react-hooks": "^7.1.1",
+        "eslint-plugin-react-refresh": "^0.5.2",
+        "eslint-plugin-unused-imports": "^4.4.1",
+        "globals": "^17.6.0",
+        "plugin-react": "^0.0.1-security",
+        "prettier": "^3.8.4",
+        "vite": "^8.0.12",
+        "vite-plugin-eslint2": "^5.1.0"
+    }
+}
