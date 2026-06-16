@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
+import { getStorage, connectStorageEmulator } from 'firebase/storage';
 import { getAnalytics,  } from 'firebase/analytics';
 import { connectFunctionsEmulator, getFunctions }from "firebase/functions"
 import {connectFirestoreEmulator, getFirestore} from 'firebase/firestore';
@@ -22,6 +23,7 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const functions = getFunctions(app);
 export const analytics = import.meta.env.DEV ? null : getAnalytics(app);
+export const storage = getStorage(app);
 
 
 
@@ -29,9 +31,10 @@ export const analytics = import.meta.env.DEV ? null : getAnalytics(app);
 if (import.meta.env.DEV) {
     // Conecta al puerto por defecto del emulador de functions (5001)
     connectFunctionsEmulator(functions, 'localhost', 5007);
-    connectAuthEmulator(auth, 'http://localhost:9099');
+    connectStorageEmulator(storage, 'localhost', 9199);
+    connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
     connectFirestoreEmulator(db, 'localhost', 8080);
-    console.log('¡Conectado exitosamente al Emulador de Functions!');
+    console.info('¡Conectado exitosamente al Emulador de Functions!');
 }
 
 

@@ -10,14 +10,14 @@ import App from './App.jsx';
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
-        <BrowserRouter>
+        <Provider store={store}>
             <AuthProvider>
-                <Provider store={store}>
+                <BrowserRouter>
                     <ThemeProviderWrapper>
                         <App />
                     </ThemeProviderWrapper>
-                </Provider>
+                </BrowserRouter>
             </AuthProvider>
-        </BrowserRouter>
+        </Provider>
     </StrictMode>
 );

@@ -104,17 +104,18 @@ const AdminUsers = () => {
                 component={Paper}
                 elevation={0}
                 sx={{
+                    
                     borderRadius: '12px',
                     border: '1px solid',
                     borderColor: 'divider',
-                    overflow: 'hidden',
+                    overflow: 'auto',
                 }}
             >
                 <Table aria-label='tabla de usuarios'>
                     <TableHead sx={{ bgcolor: 'action.hover' }}>
                         <TableRow>
                             <TableCell sx={{ fontWeight: 'bold' }}>
-                                UID (Firebase)
+                                Usuario
                             </TableCell>
                             <TableCell sx={{ fontWeight: 'bold' }}>
                                 Correo Electrónico
@@ -162,7 +163,7 @@ const AdminUsers = () => {
                                             color: 'text.secondary',
                                         }}
                                     >
-                                        {row.id}
+                                        {row.displayName}
                                     </TableCell>
 
                                     {/* Email */}

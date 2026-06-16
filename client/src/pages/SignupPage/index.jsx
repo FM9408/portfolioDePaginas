@@ -1,12 +1,14 @@
 // src/pages/SignUpPage.jsx
 import React from 'react';
 import { Container, Box, Divider, Typography } from '@mui/material';
+import { NavLink } from 'react-router-dom';
 import { RegisterForm } from '../../components/RegisterForm';
 import { GoogleLoginButton } from '../../components/GoogleLoginButton';
-import { UseAuth } from '../../context/AuthContext'; //
+import { useSelector } from 'react-redux';
 
 export default function SignUpPage() {
-    const { isAnonymous, user } = UseAuth(); //
+    const {user} = useSelector((state) => state.userAuth);
+
 
     return (
         <Container maxWidth='xs' sx={{ mt: 8, mb: 4 }}>
@@ -29,6 +31,20 @@ export default function SignUpPage() {
             {/* Botón de Google */}
             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
                 <GoogleLoginButton />
+            </Box>
+            <Box>
+                <Typography variant='body2' color='text.secondary'>
+                    ¿Ya tienes una cuenta?{' '}
+                    <Typography
+                        variant='body2'
+                        color='blue'
+                        component='span'
+                        sx={{ cursor: 'pointer' }}
+                
+                    >
+                       <NavLink to='/login'>Inicia Sesión   </NavLink>
+                    </Typography>
+                </Typography>
             </Box>
 
             {/* Panel de Depuración en Entorno de Desarrollo */}
@@ -62,12 +78,12 @@ export default function SignUpPage() {
                     <Typography
                         variant='caption'
                         display='block'
-                        color={isAnonymous ? 'warning.main' : 'success.main'}
+                        color={user.isAnonymous ? 'warning.main' : 'success.main'}
                         align='center'
                         sx={{ fontWeight: 'bold' }}
                     >
                         Tipo de Sesión:{' '}
-                        {isAnonymous ?
+                        {user.isAnonymous ?
                             'Anónima (Temporal)'
                         :   'Cuenta Vinculada (Real)'}
                     </Typography>

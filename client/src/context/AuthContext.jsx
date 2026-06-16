@@ -1,5 +1,7 @@
-// src/context/AuthContext.jsx
+
+
 import {
+
     createContext,
     useContext,
     useState,
@@ -8,7 +10,10 @@ import {
     useCallback,
 } from 'react';
 import PropTypes from 'prop-types';
+import { setUserinStore, cleanUserStore} from '../store/slices/user/userAuthSlice';
+import { useDispatch } from 'react-redux';
 import { auth } from '../firebase/config';
+import { getUserImage } from '../firebase/storage';
 import { doc, getDoc } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions'; // <-- Importamos llamador de functions
 import {
@@ -25,17 +30,35 @@ import {
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState({
+        role:"user",
+        isAuthenticated: false,
+        isAnonymous: true,
+        image: null,
+    });
     const [role, setRole] = useState(null);
     const [loading, setLoading] = useState(true);
+    const dispatch = useDispatch();
 
     const isAuthenticated = !!user && !user.isAnonymous;
     const isAnonymous = !!user && user.isAnonymous;
     const isAdmin = role === 'admin';
 
+    
+    
+    
+    
     useEffect(() => {
+        const setUserinStorefn = (currentUser) => {
+            if (currentUser) {
+                dispatch(setUserinStore({ ...currentUser.toJSON(), isAuthenticated: true, role: role || 'user' }));
+            }
+        }
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             setUser(currentUser);
+          setUserinStorefn(currentUser);
+
+         
 
             if (currentUser && !currentUser.isAnonymous) {
                 // Aquí usamos la DB local solo para leer el rol, no para escribir
@@ -44,11 +67,14 @@ export const AuthProvider = ({ children }) => {
                     const userDoc = await getDoc(
                         doc(db, 'users', currentUser.uid)
                     );
-                    setRole(
-                        userDoc.exists() ?
-                            userDoc.data().role || 'user'
-                        :   'user'
-                    );
+                    const userPic = await getUserImage(currentUser.uid);
+                    setUser({
+                        ...currentUser.toJSON(),
+                        ...userDoc.data(),
+                        role: userDoc.exists() ? userDoc.data().role || 'user' : 'user',
+                        photoURL: userPic,
+                    });
+                    setRole(user.role);
                 } catch (e) {
                     setRole('user');
                 }
@@ -59,7 +85,7 @@ export const AuthProvider = ({ children }) => {
         });
 
         return () => unsubscribe();
-    }, []);
+    }, [dispatch, role]);
 
     const loginWithEmail = useCallback((email, password) => {
         return signInWithEmailAndPassword(auth, email, password);
@@ -106,8 +132,9 @@ export const AuthProvider = ({ children }) => {
   );
 
     const logout = useCallback(() => {
+        dispatch(cleanUserStore());
         return signOut(auth);
-    }, []);
+    }, [dispatch]);
 
     const contextValue = useMemo(
         () => ({

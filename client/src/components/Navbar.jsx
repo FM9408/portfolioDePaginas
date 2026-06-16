@@ -34,7 +34,7 @@ export default function Navbar() {
         authContextValues.user || authContextValues.currentUser || null;
 
     const logout =
-        authContextValues.logout || (() => console.log('Falta logout'));
+        authContextValues.logout || (() => console.error('Falta logout'));
 
     const handleOpenNavMenu = (event) => setAnchorElNav(event.currentTarget);
     const handleOpenUserMenu = (event) => setAnchorElUser(event.currentTarget);
@@ -46,6 +46,7 @@ export default function Navbar() {
     const handleLogoutClick = async () => {
         try {
             await logout();
+            navigate('/');
             handleCloseUserMenu();
         } catch (error) {
             console.error('Error al cerrar sesión:', error);
@@ -251,7 +252,7 @@ export default function Navbar() {
                                             {user.email}
                                         </Typography>
                                     </MenuItem>
-                                    <MenuItem onClick={() => navigate("/dashboard")}>Dashboard</MenuItem>
+                                    <MenuItem onClick={() => navigate(`${user.uid}/dashboard`)}>Dashboard</MenuItem>
                                     <MenuItem onClick={handleLogoutClick}>
                                         <Typography variant='body2'>
                                             Cerrar Sesión
@@ -259,8 +260,10 @@ export default function Navbar() {
                                     </MenuItem>
                                 </Menu>
                             </>
-                        :   <Button
-                                color='inherit'
+                        :   
+                        globalThis.location.pathname !== "/login" &&
+                            <Button
+                               color='secondary.main'
                                 variant='outlined'
                                 onClick={handleLoginClick} // Ejecuta la función de tu contexto
                                 sx={{

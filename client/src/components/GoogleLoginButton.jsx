@@ -9,9 +9,9 @@ export function GoogleLoginButton() {
         try {
             const result = await loginWithGoogle();
             const user = result.user;
-            console.log('¡Login exitoso con Google!', user.displayName);
+            console.info('¡Login exitoso con Google!', user.displayName);
         } catch (error) {
-            console.error('Error al iniciar sesión con Google:', error.message);
+           console.error('Error al iniciar sesión con Google:', error.message);
         }
     };
 

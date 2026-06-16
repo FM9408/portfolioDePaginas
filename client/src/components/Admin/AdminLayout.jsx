@@ -24,6 +24,7 @@ const AdminLayout = ({
         <Box
             sx={{
                 display: 'flex',
+                overflowX: 'auto',
                 bgcolor: 'background.default',
                 minHeight: '100vh',
             }}
@@ -109,8 +110,9 @@ const AdminLayout = ({
                 component='main'
                 sx={{
                     flexGrow: 1,
-                    p: 3,
-                    width: { md: `calc(100% - ${drawerWidth}px)` },
+                    p: 1,
+                    overflowX:"auto",
+                    width: {xs:"100%", md: `calc(100% - ${drawerWidth}px)` },
                 }}
             >
                 <Toolbar />

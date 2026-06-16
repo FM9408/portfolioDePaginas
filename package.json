@@ -1,15 +1,18 @@
 {
-  "name": "portfoliodepaginas",
-  "version": "1.0.0",
-  "description": "el monorepo de mi portfolio de paginas para comenzar a publicitar",
-  "license": "MIT",
-  "author": "FM9408",
-  "type": "commonjs",
-  "main": "index.js",
-  "workspaces": ["*/"],
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npm run dev --workspaces",
-    "start": "npm run start --workspaces"
-  }
+    "name": "portfoliodepaginas",
+    "version": "1.0.0",
+    "description": "el monorepo de mi portfolio de paginas para comenzar a publicitar",
+    "license": "MIT",
+    "author": "FM9408",
+    "type": "commonjs",
+    "main": "index.js",
+    "workspaces": [
+        "*/"
+    ],
+    
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev": "npm run dev --workspaces",
+        "start": "npm run start --workspaces"
+    }
 }

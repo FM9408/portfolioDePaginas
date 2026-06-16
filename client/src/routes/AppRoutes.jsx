@@ -2,10 +2,10 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Box, CircularProgress } from '@mui/material';
 import ProtectedRoute from '../components/ProtectedRutes'; // Mantengo tu typo exacto
-import { UseAuth } from '../context/AuthContext.jsx';
-
+import { useSelector } from 'react-redux'
+;import { UseAuth } from '../context/AuthContext.jsx';
 // Componentes de tu app
-import Home from '../pages/Home';
+import LandingPage from '../pages/LandingPage';
 import Login from '../pages/Login';
 import Dashboard from '../pages/Dashboard';
 import SignUpPage from '../pages/SignupPage';
@@ -14,6 +14,7 @@ import AdminDashboard from '../pages/Admin/Admindashboard.jsx';
 
 const AppRoutes = () => {
     const { isAuthenticated, role, loading } = UseAuth();
+    const {user} = useSelector((state) => state.userAuth);
 
     if (loading) {
         return (
@@ -34,7 +35,7 @@ const AppRoutes = () => {
     return (
         <Routes>
             {/* ================= RUTAS GENERALES (PÚBLICAS) ================= */}
-            <Route path='/' element={<Home />} />
+            <Route path='/' element={<LandingPage />} />
             <Route path='/login' element={<Login />} />
             <Route path='/signup' element={<SignUpPage />} />
 
@@ -44,7 +45,7 @@ const AppRoutes = () => {
                 element={
                     <ProtectedRoute
                         isAllowed={isAuthenticated}
-                        redirectTo='/login'
+                       
                     />
                 }
             >
@@ -53,10 +54,10 @@ const AppRoutes = () => {
                   esta condicional te redirige de inmediato a la ruta correcta sin romper nada.
                 */}
                 <Route
-                    path='/dashboard'
+                    path='/:userId/dashboard'
                     element={
                         role === 'admin' ?
-                            <Navigate to='/admin/dashboard' replace />
+                            <Navigate to={`/${user.uid}/admin/dashboard`} replace />
                         :   <Dashboard />
                     }
                 />
@@ -68,11 +69,10 @@ const AppRoutes = () => {
                 element={
                     <ProtectedRoute
                         isAllowed={isAuthenticated && role === 'admin'}
-                        redirectTo='/dashboard'
-                    />
+                        redirectTo={`/${user.uid}/admin/dashboard`}                    />
                 }
             >
-                <Route path='/admin/dashboard' element={<AdminDashboard />} />
+                <Route path='/:userId/admin/dashboard' element={<AdminDashboard />} />
             </Route>
 
             {/* Ruta para manejar el error 404 Not Found */}
