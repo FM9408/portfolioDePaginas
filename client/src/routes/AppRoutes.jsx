@@ -5,7 +5,7 @@ import ProtectedRoute from '../components/ProtectedRutes'; // Mantengo tu typo e
 import { useSelector } from 'react-redux'
 ;import { UseAuth } from '../context/AuthContext.jsx';
 // Componentes de tu app
-import Home from '../pages/Home';
+import LandingPage from '../pages/LandingPage';
 import Login from '../pages/Login';
 import Dashboard from '../pages/Dashboard';
 import SignUpPage from '../pages/SignupPage';
@@ -35,7 +35,7 @@ const AppRoutes = () => {
     return (
         <Routes>
             {/* ================= RUTAS GENERALES (PÚBLICAS) ================= */}
-            <Route path='/' element={<Home />} />
+            <Route path='/' element={<LandingPage />} />
             <Route path='/login' element={<Login />} />
             <Route path='/signup' element={<SignUpPage />} />
 
