@@ -10,11 +10,7 @@
         "logs": "firebase functions:log"
     },
     "engines": {
-        "runtime": {
-            "node": ">=22",
-            "recommended": ">=22",
-            "name": "nodejs24"
-        },
+        
         "node": "24"
     },
     "main": "index.js",
