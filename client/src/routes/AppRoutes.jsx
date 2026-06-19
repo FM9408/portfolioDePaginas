@@ -1,11 +1,10 @@
 // src/routes/AppRoutes.jsx
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { Box, CircularProgress } from '@mui/material';
 import ProtectedRoute from '../components/ProtectedRutes'; // Mantengo tu typo exacto
-import { useSelector } from 'react-redux'
+import Catalogo from '../modules/productos/catalogoDeProductos.jsx';
 ;import { UseAuth } from '../context/AuthContext.jsx';
 // Componentes de tu app
-import LandingPage from '../pages/LandingPage';
 import Login from '../pages/Login';
 import Dashboard from '../pages/Dashboard';
 import SignUpPage from '../pages/SignupPage';
@@ -14,7 +13,7 @@ import AdminDashboard from '../pages/Admin/Admindashboard.jsx';
 
 const AppRoutes = () => {
     const { isAuthenticated, role, loading } = UseAuth();
-    const {user} = useSelector((state) => state.userAuth);
+   
 
     if (loading) {
         return (
@@ -35,7 +34,7 @@ const AppRoutes = () => {
     return (
         <Routes>
             {/* ================= RUTAS GENERALES (PÚBLICAS) ================= */}
-            <Route path='/' element={<LandingPage />} />
+            <Route path='/' element={<Catalogo />} />
             <Route path='/login' element={<Login />} />
             <Route path='/signup' element={<SignUpPage />} />
 
@@ -56,9 +55,8 @@ const AppRoutes = () => {
                 <Route
                     path='/:userId/dashboard'
                     element={
-                        role === 'admin' ?
-                            <Navigate to={`/${user.uid}/admin/dashboard`} replace />
-                        :   <Dashboard />
+                        
+                        <Dashboard />
                     }
                 />
                 <Route path='/settings' element={<Settings />} />
@@ -69,7 +67,7 @@ const AppRoutes = () => {
                 element={
                     <ProtectedRoute
                         isAllowed={isAuthenticated && role === 'admin'}
-                        redirectTo={`/${user.uid}/admin/dashboard`}                    />
+                     />
                 }
             >
                 <Route path='/:userId/admin/dashboard' element={<AdminDashboard />} />

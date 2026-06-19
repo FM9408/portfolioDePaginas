@@ -5,7 +5,7 @@ import { UseAuth } from '../context/AuthContext';
 import { Box, CircularProgress } from '@mui/material';
 
 const ProtectedRoute = ({ allowedRoles }) => {
-    const { isAuthenticated, role, loading } = UseAuth();
+    const { role, loading } = UseAuth();
 
     // Mientras Firebase y Firestore responden, mostramos una pantalla de carga limpia de MUI
     if (loading) {
@@ -24,9 +24,7 @@ const ProtectedRoute = ({ allowedRoles }) => {
     }
 
     // Si no está logueado, al login
-    if (!isAuthenticated) {
-        return <Navigate to='/login' replace />;
-    }
+    
 
     // Si su rol no está dentro de los permitidos para esta ruta, lo mandamos a una página de acceso denegado o a su dashboard base
     if (allowedRoles && !allowedRoles.includes(role)) {

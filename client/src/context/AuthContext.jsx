@@ -13,24 +13,25 @@ import PropTypes from 'prop-types';
 import { setUserinStore, cleanUserStore} from '../store/slices/user/userAuthSlice';
 import { useDispatch } from 'react-redux';
 import { auth } from '../firebase/config';
+import { useSelector } from 'react-redux';
 import { getUserImage } from '../firebase/storage';
 import { doc, getDoc } from 'firebase/firestore';
-import { getFunctions, httpsCallable } from 'firebase/functions'; // <-- Importamos llamador de functions
+// <-- Importamos llamador de functions
 import {
     signInWithEmailAndPassword,
     signOut,
     onAuthStateChanged,
     GoogleAuthProvider,
     signInWithPopup,
-    signInAnonymously,
-    linkWithCredential,
-    EmailAuthProvider,
+    createUserWithEmailAndPassword,
+    updateProfile
 } from 'firebase/auth';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState({
+    const {user} = useSelector(state => state.userAuth)
+    const [userState, setUserState] = useState({
         role:"user",
         isAuthenticated: false,
         isAnonymous: true,
@@ -40,27 +41,35 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const dispatch = useDispatch();
 
-    const isAuthenticated = !!user && !user.isAnonymous;
-    const isAnonymous = !!user && user.isAnonymous;
+    const isAuthenticated = !!userState && !userState.isAnonymous;
+    const isAnonymous = !!userState && userState.isAnonymous;
     const isAdmin = role === 'admin';
 
     
     
+    const setUserinStorefn = (user) => {
+        if (user && user.uid !== "") {
+            dispatch(setUserinStore({ ...user}));
+        }
+    }
     
+    
+    useMemo(() => {
+        
+        return () => {  setUserinStorefn(userState)};
+    }, [userState])
+
+
+
     
     useEffect(() => {
-        const setUserinStorefn = (currentUser) => {
-            if (currentUser) {
-                dispatch(setUserinStore({ ...currentUser.toJSON(), isAuthenticated: true, role: role || 'user' }));
-            }
-        }
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-            setUser(currentUser);
-          setUserinStorefn(currentUser);
+            
+         
 
          
 
-            if (currentUser && !currentUser.isAnonymous) {
+            if (currentUser) {
                 // Aquí usamos la DB local solo para leer el rol, no para escribir
                 const { db } = await import('../firebase/config');
                 try {
@@ -68,14 +77,15 @@ export const AuthProvider = ({ children }) => {
                         doc(db, 'users', currentUser.uid)
                     );
                     const userPic = await getUserImage(currentUser.uid);
-                    setUser({
+                    setUserState({
                         ...currentUser.toJSON(),
                         ...userDoc.data(),
                         role: userDoc.exists() ? userDoc.data().role || 'user' : 'user',
                         photoURL: userPic,
                     });
-                    setRole(user.role);
+                    setRole(userState.role);
                 } catch (e) {
+                    console.log(e)
                     setRole('user');
                 }
             } else {
@@ -83,9 +93,12 @@ export const AuthProvider = ({ children }) => {
             }
             setLoading(false);
         });
-
-        return () => unsubscribe();
-    }, [dispatch, role]);
+        
+        return() => {
+            unsubscribe();
+        }
+        
+    }, [dispatch, role, userState.role]);
 
     const loginWithEmail = useCallback((email, password) => {
         return signInWithEmailAndPassword(auth, email, password);
@@ -97,48 +110,39 @@ export const AuthProvider = ({ children }) => {
         return signInWithPopup(auth, provider);
     }, []);
 
-  const registerAndLinkAccount = useCallback(
-      async (email, password, username) => {
-          if (!auth.currentUser) {
-              await signInAnonymously(auth);
-          }
-
-          const currentUser = auth.currentUser;
-
-          if (currentUser.isAnonymous) {
-              const credential = EmailAuthProvider.credential(email, password);
-
-              // 1. Vinculamos de forma local en Auth
-              const userCredential = await linkWithCredential(
-                  currentUser,
-                  credential
-              );
-
-              // 2. Despertamos la Cloud Function pasándole email y el nuevo username
-              const functions = getFunctions();
-              const llamarFuncionServidor = httpsCallable(
-                  functions,
-                  'registrarDocumentoDesdeServidor'
-              );
-
-              await llamarFuncionServidor({ email: email, username: username });
-
-              return userCredential;
-          } else {
-              throw new Error('Ya hay una sesión real activa.');
-          }
+    const registerWithEmail = useCallback(
+        async (regiteredUser) => {
+         try {
+            const user = (await createUserWithEmailAndPassword(auth, regiteredUser.email, regiteredUser.password)).user;
+            await updateProfile(user, {
+             displayName: regiteredUser.displayName,
+             photoURL: regiteredUser.photoURL || "",
+            })
+            
+           
+            return user.toJSON();
+         } catch (error) {
+          throw  new Error(error.message);
+         ;
+         }
       },
       []
   );
 
-    const logout = useCallback(() => {
+  const logout = useCallback(async() => {
+        await signOut(auth);
         dispatch(cleanUserStore());
-        return signOut(auth);
+        setUserState({
+            role:"user",
+            isAuthenticated: false,
+            isAnonymous: true,
+            image: null,
+        })
     }, [dispatch]);
 
     const contextValue = useMemo(
         () => ({
-            user,
+            userState,
             role,
             isAdmin,
             loading,
@@ -146,11 +150,11 @@ export const AuthProvider = ({ children }) => {
             isAnonymous,
             loginWithEmail,
             loginWithGoogle,
-            registerAndLinkAccount,
+            registerWithEmail,
             logout,
         }),
         [
-            user,
+            userState,
             role,
             isAdmin,
             loading,
@@ -158,7 +162,7 @@ export const AuthProvider = ({ children }) => {
             isAnonymous,
             loginWithEmail,
             loginWithGoogle,
-            registerAndLinkAccount,
+            registerWithEmail,
             logout,
         ]
     );

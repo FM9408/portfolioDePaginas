@@ -31,7 +31,7 @@ export default function Navbar() {
 
     // Mapeo seguro: Si tus variables se llaman diferente, solo cámbialas aquí a la derecha:
     const user =
-        authContextValues.user || authContextValues.currentUser || null;
+        authContextValues.userState || authContextValues.currentUser || null;
 
     const logout =
         authContextValues.logout || (() => console.error('Falta logout'));
@@ -46,10 +46,12 @@ export default function Navbar() {
     const handleLogoutClick = async () => {
         try {
             await logout();
-            navigate('/');
-            handleCloseUserMenu();
+            return handleCloseUserMenu();
         } catch (error) {
             console.error('Error al cerrar sesión:', error);
+        }finally {
+            navigate('/');
+
         }
     };
 
@@ -214,7 +216,7 @@ export default function Navbar() {
                             alignItems: 'center',
                         }}
                     >
-                        {user ?
+                        {user.uid && authContextValues.isAuthenticated ?
                             <>
                                 <Tooltip title='Opciones'>
                                     <IconButton
@@ -253,7 +255,7 @@ export default function Navbar() {
                                         </Typography>
                                     </MenuItem>
                                     <MenuItem onClick={() => navigate(`${user.uid}/dashboard`)}>Dashboard</MenuItem>
-                                    <MenuItem onClick={handleLogoutClick}>
+                                    <MenuItem onClick={async() => await handleLogoutClick()}>
                                         <Typography variant='body2'>
                                             Cerrar Sesión
                                         </Typography>

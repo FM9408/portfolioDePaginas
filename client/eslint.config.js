@@ -42,7 +42,6 @@ export default [
       eqeqeq: ["error", "always"],
       "prefer-const": "error",
       "no-var": "error",
-      "no-console": "warn",
       "max-len": ["error", { code: 120, ignoreUrls: true }],
       "react/react-in-jsx-scope": "off",
       "react/prop-types": "off",

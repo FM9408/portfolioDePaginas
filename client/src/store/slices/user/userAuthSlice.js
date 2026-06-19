@@ -17,6 +17,9 @@ const userAuthSlice = createSlice({
         setUserinStore (state, action) {
             state.user = {...action.payload}
         },
+        detRoleinStore (state, action) {
+            state.user.role = action.payload;
+        },
         cleanUserStore (state) {
             state.user = {
                 uid: "",
@@ -28,7 +31,7 @@ const userAuthSlice = createSlice({
             };
         }
     },
-});
+})
 
-export const { setUserinStore, cleanUserStore } = userAuthSlice.actions;
+export const { setUserinStore, cleanUserStore, setRoleinStore} = userAuthSlice.actions;
 export default userAuthSlice.reducer;

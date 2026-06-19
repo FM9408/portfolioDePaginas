@@ -18,6 +18,7 @@
         "@mui/icons-material": "^9.1.1",
         "@mui/material": "^9.0.1",
         "@reduxjs/toolkit": "^2.12.0",
+        "axios": "^1.18.0",
         "firebase": "^12.14.0",
         "framer-motion": "^12.40.0",
         "react": "^19.2.6",
@@ -40,6 +41,7 @@
         "globals": "^17.6.0",
         "plugin-react": "^0.0.1-security",
         "prettier": "^3.8.4",
+        "uuid": "^8.3.2",
         "vite": "^8.0.12",
         "vite-plugin-eslint2": "^5.1.0"
     }

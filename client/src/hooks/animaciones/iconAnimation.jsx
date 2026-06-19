@@ -4,7 +4,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import {Login as HelpOutlineIcon} from "@mui/icons-material";
-import { Typography, useTheme } from "@mui/material";
+import { Typography} from "@mui/material";
 
 
 
@@ -23,7 +23,7 @@ const popBounce = keyframes`
 `;
 
 export function StatusIcon({ status }) {
-    const theme = useTheme();
+    
   
   // Si está cargando, muestra el CircularProgress normal corriendo
   if (status === "info") {
