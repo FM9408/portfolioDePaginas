@@ -11,8 +11,8 @@
     },
     "engines": {
         "runtime": {
-            "node": ">=12",
-            "recommended": ">=12",
+            "node": ">=22",
+            "recommended": ">=22",
             "name": "nodejs24"
         },
         "node": "24"
