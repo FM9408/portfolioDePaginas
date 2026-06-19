@@ -1,10 +1,13 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from 'firebase/app';
-import { getAuth, connectAuthEmulator } from 'firebase/auth';
+import { initializeApp, } from 'firebase/app';
+import { getAuth, connectAuthEmulator,  } from 'firebase/auth';
 import { getStorage, connectStorageEmulator } from 'firebase/storage';
 import { getAnalytics,  } from 'firebase/analytics';
-import { connectFunctionsEmulator, getFunctions }from "firebase/functions"
-import {connectFirestoreEmulator, getFirestore} from 'firebase/firestore';
+import { connectFunctionsEmulator, getFunctions,  }from "firebase/functions"
+import {getPerformance} from "firebase/performance"
+import {connectFirestoreEmulator, getFirestore, } from 'firebase/firestore';
+import {ejecutarInyeccionAutomatica} from "./database.js"
+
 
 
 const firebaseConfig = {
@@ -24,17 +27,20 @@ export const db = getFirestore(app);
 export const functions = getFunctions(app);
 export const analytics = import.meta.env.DEV ? null : getAnalytics(app);
 export const storage = getStorage(app);
+export const performance = import.meta.env.DEV ? null : getPerformance(app);
 
 
 
 
 if (import.meta.env.DEV) {
+    
     // Conecta al puerto por defecto del emulador de functions (5001)
     connectFunctionsEmulator(functions, 'localhost', 5007);
     connectStorageEmulator(storage, 'localhost', 9199);
     connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
     connectFirestoreEmulator(db, 'localhost', 8080);
     console.info('¡Conectado exitosamente al Emulador de Functions!');
+    ejecutarInyeccionAutomatica()
 }
 
 

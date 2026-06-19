@@ -4,6 +4,7 @@ import { UseAuth } from '../../context/AuthContext';
 
 // Importación de subcomponentes estructurados
 import AdminLayout from '../../components/Admin/AdminLayout.jsx';
+import AdminProductos from './AdminProductos.jsx';
 import  AdminMenu  from '../../components/Admin/AdminMenu.jsx';
 import AdminHome from '../../components/Admin/AdminHome.jsx';
 import AdminUsers from './AdminUsers.jsx';
@@ -16,11 +17,15 @@ import {
     ShoppingBag as ProductsIcon,
     Settings as SettingsIcon,
 } from '@mui/icons-material';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
-    const { user, logout } = UseAuth();
+    const { logout } = UseAuth();
+    const {user} = useSelector((state) => state.userAuth);
     const [mobileOpen, setMobileOpen] = useState(false);
     const [activeSection, setActiveSection] = useState('Dashboard');
+    const navigate = useNavigate()
 
     const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
     const handleSectionChange = (section) => {
@@ -53,6 +58,7 @@ const AdminDashboard = () => {
             activeSection={activeSection}
             onSectionChange={handleSectionChange}
             onLogout={handleLogout}
+            navigate ={navigate}
         />
     );
 
@@ -66,8 +72,9 @@ const AdminDashboard = () => {
             {/* Control exacto y limpio de módulos según la sección activa */}
             {activeSection === 'Dashboard' && <AdminHome />}
             {activeSection === 'Usuarios' && <AdminUsers />}
+            {activeSection === "Productos" && <AdminProductos />}
 
-            {activeSection !== 'Dashboard' && activeSection !== 'Usuarios' && (
+            {activeSection !== 'Dashboard' && activeSection !== 'Usuarios' && activeSection !== "Productos" && (
                 <Box sx={{ p: 3, textAlign: 'center' }}>
                     <Paper
                         elevation={0}

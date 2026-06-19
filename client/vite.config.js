@@ -14,10 +14,7 @@ export default defineConfig({
 
   envDir: "./",
   envPrefix: "VITE_",
-  esbuild: {
-    pure: ["console.log", "console.info"], // Borra automáticamente .log e .info
-    // Al NO poner 'console.error' ni 'console.warn', estos se quedarán intactos
-  },
+  
 
   build: {
     sourcemap: true, // Esto genera un archivo .map para facilitar la depuración en producción

@@ -7,9 +7,14 @@ export async function getUserImage (uid) {
     const userRef = ref(storage, 'users/' + uid + '/profilePhotos');
     try {
        const elements = await listAll(userRef);
-       const url = await getDownloadURL(elements.items[0]);
-       console.info(url)
-       return url;
+       if(elements.items.length > 0) {
+          const url = await getDownloadURL(elements.items[0]);
+          console.info(url)
+         return url;
+       }else {
+        return null;
+       }
+       
     } catch (err) {
         console.error(err);
    }

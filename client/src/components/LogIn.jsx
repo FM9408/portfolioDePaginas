@@ -35,9 +35,9 @@ const LogInForm = () => {
     e.preventDefault();
 
     signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
+      .then(() => {
         auth
-          .beforeAuthStateChanged((user) => {
+          .beforeAuthStateChanged(() => {
             setStatus("success");
           })
           

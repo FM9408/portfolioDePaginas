@@ -29,3 +29,5 @@ yarn-error.log*
 /.env.*
 build 
 .agents/
+extensions/firestore-user-document.env
+extensions/delete-user-data.env

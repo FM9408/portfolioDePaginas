@@ -4,10 +4,9 @@ import PropTypes from 'prop-types';
 import { Toolbar, Avatar, Typography, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Box, Button } from '@mui/material';
 import { ExitToApp as LogoutIcon } from '@mui/icons-material';
 
-const AdminMenu = ({ userEmail, userPhoto, menuItems, activeSection, onSectionChange, onLogout, userDisplayName }) => {
+const AdminMenu = ({ userEmail, userPhoto, menuItems, activeSection, onSectionChange, onLogout, userDisplayName, navigate }) => {
     // Obtenemos la inicial del correo para el fallback visual si no hay foto
     const initialLetter = userEmail ? userEmail.charAt(0).toUpperCase() : 'A';
-
     return (
         <div>
             <Toolbar sx={{ display: 'flex', flexDirection: 'column', pt: 3, pb: 2, gap: 1 }}>
@@ -53,10 +52,13 @@ const AdminMenu = ({ userEmail, userPhoto, menuItems, activeSection, onSectionCh
             <Box sx={{ px: 2, position: 'absolute', bottom: 16, width: '100%', boxSizing: 'border-box' }}>
                 <Button
                     fullWidth
-                    variant="outlined"
+                    variant="contained"
                     color="error"
                     startIcon={<LogoutIcon />}
-                    onClick={onLogout}
+                    onClick={async () =>{
+                        await onLogout()
+                        navigate("/")}
+                    }
                     sx={{ borderRadius: '8px', textTransform: 'none' }}
                 >
                     Cerrar Sesión
