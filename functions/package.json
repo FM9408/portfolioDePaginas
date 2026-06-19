@@ -13,9 +13,9 @@
         "runtime": {
             "node": ">=22",
             "recommended": ">=22",
-            "name": "nodejs24"
+            "name": "nodejs22"
         },
-        "node": "24"
+        "node": ">=22"
     },
     "main": "index.js",
     "dependencies": {
