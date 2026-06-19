@@ -10,11 +10,6 @@
         "logs": "firebase functions:log"
     },
     "engines": {
-        "runtime": {
-            "node": ">=22",
-            "recommended": ">=22",
-            "name": "nodejs22"
-        },
         "node": ">=22"
     },
     "main": "index.js",
