@@ -6,12 +6,22 @@ import Navbar from "./components/Navbar";
 import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import { UseAuth } from "./context/AuthContext";
+import { getProductsFromDB } from "./store/slices/productos/getProducts";
+import { useDispatch, useSelector } from "react-redux";
 
 function App() {
   const { userState, isAuthenticated } = UseAuth()
-  
+  const {productos, loading} = useSelector(state => state.productos.getProducts)
+  const dispatch = useDispatch()
 
   const navigate = useNavigate();
+
+
+  React.useMemo(() => {
+    if(loading) {
+      dispatch(getProductsFromDB())
+    }
+  }, [productos, loading, dispatch])
 
   React.useLayoutEffect(() => {
     // Si ya hay sesión iniciada de antes, dejamos que el router decida dónde colocarlo

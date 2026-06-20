@@ -1,7 +1,8 @@
 // src/routes/AppRoutes.jsx
 import { Routes, Route } from 'react-router-dom';
 import { Box, CircularProgress } from '@mui/material';
-import ProtectedRoute from '../components/ProtectedRutes'; // Mantengo tu typo exacto
+import ProtectedRoute from '../components/ProtectedRutes'; // Manten
+import ProductPage from '../pages/Product/index.jsx';
 import Catalogo from '../modules/productos/catalogoDeProductos.jsx';
 ;import { UseAuth } from '../context/AuthContext.jsx';
 // Componentes de tu app
@@ -37,7 +38,7 @@ const AppRoutes = () => {
             <Route path='/' element={<Catalogo />} />
             <Route path='/login' element={<Login />} />
             <Route path='/signup' element={<SignUpPage />} />
-
+            <Route path='product/:productId/:productTitle' element={<ProductPage />} />
 
             {/* ================= RUTAS PROTEGIDAS (USUARIOS NORMALES) ================= */}
             <Route

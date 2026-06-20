@@ -1,8 +1,15 @@
 import React, { useEffect } from 'react';
 import { Card, CardMedia, CardContent, Typography, CardActions, Button, Box, Rating } from '@mui/material';
+import { useDispatch } from 'react-redux';
+import {useNavigate} from "react-router-dom" 
+import { queryProductById } from '../store/slices/productos/getProducts';
+import { setProduct } from '../store/slices/productos/product';
+
 
 const ProductCard = ({ producto }) => {
+  const dispatch = useDispatch()
   const { title, price, description, image } = producto;
+  const navigate = useNavigate()
 
   // SOLUCIÓN DEFINITIVA A LAS IMÁGENES:
   // Como inyectamos un píxel transparente de 1x1, Firebase Storage te devuelve una URL real pero invisible.
@@ -26,14 +33,21 @@ const ProductCard = ({ producto }) => {
       
 // //     return imageUrl; // Si subes una imagen tuya real en el futuro, usará esa.
 // //   };
-
+  function redirectHandle() {
+      const  queriedProduct = dispatch(queryProductById(producto)).payload
+      console.log(queriedProduct)
+    dispatch(setProduct(queriedProduct))
+    navigate(`product/${producto.id}/${producto.title}`, { replace: false })
+  }
 
   useEffect(() =>{
 
   }, [image,title, price, description])
 
   return (
-    <Card sx={{ 
+    <Card
+    onClick={() => redirectHandle()}
+     sx={{ 
       height: '100%', 
       maxWidth:"30vh",
       display: 'flex', 

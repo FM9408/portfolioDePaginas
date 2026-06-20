@@ -3,7 +3,7 @@ import { collection, getDocs, query } from "firebase/firestore";
 // import { ref, getDownloadURL } from "firebase/storage";
 import { db } from "../../../firebase/config";
 
-export const getProductsFromDB = createAsyncThunk("products/getProductsFromDB", async (_, { rejectWithValue }) => {
+export  const getProductsFromDB = createAsyncThunk("products/getProductsFromDB", async (_, { rejectWithValue }) => {
   try {
     const listaPlana = [];
     const q = query(collection(db, "productos"));
@@ -55,7 +55,7 @@ export const getProductsFromDB = createAsyncThunk("products/getProductsFromDB", 
 
 const initialState = {
   productos: [], // Ahora guardaremos un array plano de forma limpia
-  loading: false,
+  loading: true,
   error: null,
 };
 
@@ -66,6 +66,14 @@ const getProductSlice = createSlice({
     setProducts: (state, action) => {
       state.productos = action.payload;
     },
+    queryProductById: (state, action) => {
+      
+      state.productos.forEach((e) => {
+        if (e.id === action.payload.id) {
+          return e
+        }
+      })
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -85,5 +93,5 @@ const getProductSlice = createSlice({
   },
 });
 
-export const { setProducts } = getProductSlice.actions;
+export const { setProducts, queryProductById } = getProductSlice.actions;
 export default getProductSlice;

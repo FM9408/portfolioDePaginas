@@ -12,8 +12,8 @@ const Catalogo = () => {
 
   // 2. Único useEffect necesario: Disparar la petición al montar el componente
   useEffect(() => {
-    dispatch(getProductsFromDB());
-  }, [dispatch,  productos.length]);
+    if(loading) dispatch(getProductsFromDB());
+  }, [dispatch,  productos.length, loading]);
 
   if (loading) {
     return (
